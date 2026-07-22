@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- SEO & Social Media Share Meta Tags -->
+  <title>Yalla Trip Club – Premium Egypt Tours</title>
+  <meta name="description" content="Book exclusive day trips, beach camps, luxury yachts, and desert adventures across Egypt with Yalla Trip Club. Earn loyalty points and discounts!">
+  <meta property="og:title" content="Yalla Trip Club – Premium Egypt Tours">
+  <meta property="og:description" content="Unforgettable day trips, beach camps, and luxury yacht experiences in Egypt with Loyalty Rewards.">
+  <meta property="og:image" content="WhatsApp_Image_2026-07-17_at_11.01.57_PM-removebg-preview.png">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="WhatsApp_Image_2026-07-17_at_11.01.57_PM-removebg-preview.png">
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Leaflet CSS for Interactive Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root {
+      --primary-blue: #0A84FF;
+      --secondary-blue: #0056B3;
+      --gold-accent: #D4AF37;
+      --dark-bg: #0B132B;
+      --light-gray: #F8F9FA;
+      --text-dark: #1E293B;
+      --text-light: #64748B;
+      --white: #FFFFFF;
+      --success-green: #10B981;
+      --warning-orange: #F59E0B;
+      --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--text-dark);
+      background-color: #FAFAFA;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-padding {
+      padding: 5rem 0;
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title span {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.85rem;
+      color: var(--gold-accent);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.5rem;
+      color: var(--dark-bg);
+    }
+
+    /* Views / Pages Management */
+    .page-view {
+      display: none;
+    }
+
+    .page-view.active-page {
+      display: block;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      background: #FFFFFF;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+      padding: 0.2rem 0;
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.2rem 1.5rem;
+    }
+
+    .nav-left, .nav-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-left { justify-content: flex-start; }
+    .nav-right { justify-content: flex-end; gap: 0.8rem; }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .site-logo {
+      height: 90px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.15));
+      transition: var(--transition);
+      display: block;
+    }
+
+    .site-logo:hover {
+      transform: scale(1.08);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary-blue);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--white);
+      padding-top: 90px;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11, 19, 43, 0.45) 0%, rgba(11, 19, 43, 0.8) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 850px;
+      padding: 0 1.5rem;
+    }
+
+    .hero-subtitle {
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      color: var(--gold-accent);
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: #E2E8F0;
+    }
+
+    /* Search Bar Widget */
+    .search-widget {
+      background: var(--white);
+      padding: 1.2rem;
+      border-radius: 16px;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      margin-top: 1rem;
+      color: var(--text-dark);
+      text-align: left;
+    }
+
+    .search-field {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .search-field i {
+      color: var(--primary-blue);
+      font-size: 1.2rem;
+    }
+
+    .search-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-light);
+    }
+
+    .search-field select {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-weight: 600;
+      color: var(--text-dark);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 1.6rem;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-blue);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--secondary-blue);
+      box-shadow: 0 8px 20px rgba(10, 132, 255, 0.35);
+    }
+
+    .btn-gold {
+      background-color: var(--gold-accent);
+      color: var(--white);
+    }
+
+    .btn-gold:hover {
+      background-color: #B89628;
+    }
+
+    .btn-outline {
+      border: 1px solid var(--primary-blue);
+      color: var(--primary-blue);
+      background: transparent;
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-blue);
+      color: var(--white);
+    }
+
+    .btn-block { width: 100%; }
+
+    /* Loyalty Rewards Banner Section */
+    .loyalty-banner {
+      background: linear-gradient(135deg, #0B132B 0%, #1C2D5A 100%);
+      color: var(--white);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      margin-top: -3rem;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .loyalty-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--gold-accent);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .loyalty-info p {
+      color: #CBD5E1;
+      font-size: 0.95rem;
+      max-width: 600px;
+    }
+
+    .loyalty-points-badge {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--gold-accent);
+      padding: 1rem 1.8rem;
+      border-radius: 16px;
+      text-align: center;
+      min-width: 220px;
+    }
+
+    .loyalty-points-badge .pts-count {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gold-accent);
+      line-height: 1;
+    }
+
+    .loyalty-points-badge .pts-label {
+      font-size: 0.8rem;
+      color: #E2E8F0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.3rem;
+    }
+
+    /* Trip Cards Grid */
+    .trips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .trip-card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .trip-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+    .trip-image {
+      height: 240px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trip-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .trip-card:hover .trip-image img {
+      transform: scale(1.08);
+    }
+
+    .badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(11, 19, 43, 0.85);
+      color: var(--gold-accent);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
+
+    .points-tag {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--gold-accent);
+      color: var(--dark-bg);
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .trip-content {
+      padding: 1.5rem;
+    }
+
+    .trip-location {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+
+    .trip-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: var(--dark-bg);
+    }
+
+    .trip-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .trip-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+    }
+
+    .trip-desc {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 1rem;
+    }
+
+    .trip-meta {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #F1F5F9;
+      padding-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    /* Interactive Map Section */
+    .map-section {
+      background: var(--light-gray);
+    }
+
+    #interactive-map {
+      height: 480px;
+      width: 100%;
+      border-radius: 20px;
+      box-shadow: var(--box-shadow);
+      z-index: 1;
+    }
+
+    /* Features Section */
+    .features-section {
+      background-color: var(--white);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: var(--light-gray);
+      padding: 2.5rem 1.8rem;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background: rgba(10, 132, 255, 0.1);
+      color: var(--primary-blue);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 1.5rem;
+    }
+
+    /* Testimonials Section */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .testimonial-card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--box-shadow);
+      position: relative;
+    }
+
+    .testimonial-card .stars {
+      color: var(--gold-accent);
+      margin-bottom: 1rem;
+    }
+
+    .testimonial-card p {
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      font-style: italic;
+      margin-bottom: 1.2rem;
+    }
+
+    .testimonial-author h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark-bg);
+    }
+
+    .testimonial-author span {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark-bg);
+      color: var(--white);
+      padding: 4rem 0 2rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .footer-col h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: 1.2rem;
+      color: var(--gold-accent);
+    }
+
+    .footer-col p, .footer-col a {
+      color: #94A3B8;
+      text-decoration: none;
+      display: block;
+      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .footer-col a:hover {
+      color: var(--white);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #64748B;
+    }
+
+    /* Floating Social Buttons */
+    .floating-socials {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 999;
+    }
+
+    .floating-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+      transition: var(--transition);
+    }
+
+    .floating-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .floating-btn.whatsapp {
+      background-color: #25D366;
+    }
+
+    .floating-btn.instagram {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+
+    /* Dedicated Trip Details Page Styling */
+    .trip-detail-hero {
+      position: relative;
+      height: 450px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      color: white;
+      padding-bottom: 3rem;
+      margin-top: 90px;
+    }
+
+    .trip-detail-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(11, 19, 43, 0.3) 0%, rgba(11, 19, 43, 0.85) 100%);
+    }
+
+    .trip-detail-hero .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    .back-btn-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: var(--white);
+      color: var(--dark-bg);
+    }
+
+    .trip-detail-content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2.5rem;
+      margin-top: 3rem;
+      margin-bottom: 5rem;
+    }
+
+    .trip-main-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--dark-bg);
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+    }
+
+    .trip-main-info p {
+      color: var(--text-light);
+      margin-bottom: 1.2rem;
+      font-size: 1.05rem;
+    }
+
+    .photo-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .photo-gallery-grid img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+    }
+
+    .photo-gallery-grid img:hover {
+      transform: scale(1.03);
+    }
+
+    .trip-sidebar-card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: var(--box-shadow);
+      position: sticky;
+      top: 120px;
+      height: fit-content;
+      border: 1px solid #E2E8F0;
+    }
+
+    .trip-sidebar-price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 1.5rem;
+    }
+
+    .trip-sidebar-features {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .trip-sidebar-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+    }
+
+    .trip-sidebar-features li i {
+      color: var(--gold-accent);
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 19, 43, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      padding: 2.5rem;
+      border-radius: 20px;
+      max-width: 550px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      font-size: 1.8rem;
+      cursor: pointer;
+      color: var(--text-dark);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      z-index: 10;
+    }
+
+    .modal-form .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .modal-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-form input, .modal-form select, .modal-form textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .form-row .form-group { flex: 1; }
+
+    /* Payment Method Selector Grid */
+    .payment-methods-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .payment-option {
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--white);
+    }
+
+    .payment-option input {
+      display: none;
+    }
+
+    .payment-option i {
+      font-size: 1.5rem;
+      color: var(--primary-blue);
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+
+    .payment-option span {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      display: block;
+    }
+
+    .payment-option:hover {
+      border-color: var(--primary-blue);
+      background: rgba(10, 132, 255, 0.03);
+    }
+
+    .payment-option.selected {
+      border-color: var(--primary-blue);
+      background: rgba(10, 132, 255, 0.08);
+    }
+
+    /* Dynamic Payment Instructions Box */
+    .payment-instructions-box {
+      background: var(--light-gray);
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      display: none;
+    }
+
+    .payment-instructions-box.active {
+      display: block;
+    }
+
+    .discount-apply-box {
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px dashed var(--gold-accent);
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .discount-apply-box label {
+      margin-bottom: 0;
+      font-weight: 600;
+      color: var(--dark-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.2rem; }
+      .search-widget { flex-direction: column; }
+      .nav-links { display: none; }
+      .nav-container { flex-direction: column; gap: 0.5rem; }
+      .site-logo { height: 75px; }
+      .form-row { flex-direction: column; gap: 0; }
+      .loyalty-banner { flex-direction: column; text-align: center; }
+      .trip-detail-content-grid { grid-template-columns: 1fr; }
+      .photo-gallery-grid { grid-template-columns: 1fr; }
+      .payment-methods-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <div class="nav-left">
+        <nav class="nav-links">
+          <a onclick="switchPage('home'); scrollToSection('home')" class="active">Home</a>
+          <a onclick="switchPage('home'); scrollToSection('loyalty')">Loyalty Club</a>
+          <a onclick="switchPage('home'); scrollToSection('trips')">Trips</a>
+          <a onclick="switchPage('home'); scrollToSection('map-section')">Explore Map</a>
+          <a onclick="switchPage('home'); scrollToSection('features')">Why Us</a>
+          <a onclick="switchPage('home'); scrollToSection('testimonials')">Reviews</a>
+        </nav>
+      </div>
+
+      <!-- PNG Logo -->
+      <a class="logo-container" onclick="switchPage('home'); scrollToSection('home')">
+        <img src="WhatsApp_Image_2026-07-17_at_11.01.57_PM-removebg-preview.Jpeg" alt="Yalla Trip Club Logo" class="site-logo">
+      </a>
+
+      <div class="nav-right">
+        <button class="btn btn-primary" onclick="openBookingModal('General Inquiry', 1500)">Book Now</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= PAGE 1: HOME PAGE ================= -->
+  <div id="page-home" class="page-view active-page">
+    
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-subtitle">Discover Egypt's Finest Destinations</span>
+        <h1 class="hero-title">Unforgettable Day Trips & Loyalty Rewards</h1>
+        <p class="hero-desc">Explore beach camps, desert safaris, felucca celebrations, and luxury yacht experiences while earning points on every booking.</p>
+        
+        <!-- Quick Search Widget -->
+        <div class="search-widget">
+          <div class="search-field">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <label>Destination</label>
+              <select id="search-dest">
+                <option value="all">All Destinations</option>
+                <option value="sokhna">Ain Sokhna</option>
+                <option value="dahab">Dahab</option>
+                <option value="rassedr">Ras Sedr</option>
+                <option value="wadidegla">Wadi Degla</option>
+                <option value="cairo">Cairo (Nile)</option>
+                <option value="alexandria">Alexandria</option>
+              </select>
+            </div>
+          </div>
+          <div class="search-field">
+            <i class="fa-solid fa-compass"></i>
+            <div>
+              <label>Trip Category</label>
+              <select id="search-cat">
+                <option value="all">All Categories</option>
+                <option value="luxury">Luxury Yacht</option>
+                <option value="vacation">Multi-Day Vacation</option>
+                <option value="camp">Beach Camp</option>
+                <option value="nature">Nature & Hike</option>
+                <option value="event">Private Event / Nile</option>
+                <option value="city">City Tour</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-gold" onclick="filterTrips()">Find Trips</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Loyalty Rewards Banner -->
+    <section id="loyalty" class="container">
+      <div class="loyalty-banner">
+        <div class="loyalty-info">
+          <h3><i class="fa-solid fa-gem"></i> Yalla Loyalty Rewards Program</h3>
+          <p>Earn <strong>100 Points</strong> for every trip you complete! 100 Points = <strong>100 EGP Instant Discount</strong> on your next booking.</p>
+        </div>
+        <div class="loyalty-points-badge">
+          <div class="pts-count" id="user-points-display">100 Pts</div>
+          <div class="pts-label">Your Balance (= 100 EGP Discount)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Trips Section -->
+    <section id="trips" class="section-padding container">
+      <div class="section-title">
+        <span>Exclusive Catalog</span>
+        <h2>Our Featured Trips</h2>
+      </div>
+
+      <div class="trips-grid" id="trips-container">
+        
+        <!-- Trip 1: Sokhna Yacht Trip -->
+        <div class="trip-card" data-dest="sokhna" data-cat="luxury" onclick="openTripPage('sokhna')">
+          <div class="trip-image">
+            <img src="https://i.pinimg.com/originals/37/e3/f3/37e3f39a308ea675fd8d5afa54c5b4ad.jpg" alt="Luxury Yacht Sailing">
+            <span class="badge">Luxury Yacht</span>
+            <span class="points-tag">+100 Pts</span>
+          </div>
+          <div class="trip-content">
+            <div class="trip-location"><i class="fa-solid fa-location-dot"></i> Ain Sokhna, Red Sea</div>
+            <h3 class="trip-title">Sokhna Yacht Trip - 1 Day</h3>
+            <div class="trip-price-row">
+              <span class="trip-price">2,200 EGP</span>
+            </div>
+            <p class="trip-desc">VIP yacht sailing experience with meals, swimming, snorkeling, and open sea relaxation.</p>
+            <div class="trip-meta">
+              <span><i class="fa-regular fa-clock"></i> 1 Day</span>
+              <span><i class="fa-solid fa-star" style="color: gold;"></i> 4.9</span>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="event.stopPropagation(); openBookingModal('Sokhna Yacht Trip - 1 Day', 2200)">Book Experience</button>
+          </div>
+        </div>
+
+        <!-- Trip 2: Dahab Trip -->
+        <div class="trip-card" data-dest="dahab" data-cat="vacation" onclick="openTripPage('dahab')">
+          <div class="trip-image">
+            <img src="https://img.freepik.com/premium-photo/milky-way-stars-sky-namib-desert-namibia-africa-some-scenic-clouds_107467-639.jpg" alt="Dahab Sunrise Beach">
+            <span class="badge">5 Days Trip</span>
+            <span class="points-tag">+100 Pts</span>
+          </div>
+          <div class="trip-content">
+            <div class="trip-location"><i class="fa-solid fa-location-dot"></i> Dahab, Sinai</div>
+            <h3 class="trip-title">Dahab - 5 Days Trip</h3>
+            <div class="trip-price-row">
+              <span class="trip-price">4,500 EGP</span>
+            </div>
+            <p class="trip-desc">5 Days of paradise: Blue Hole snorkeling, mountain adventures, beach parties, and good vibes.</p>
+            <div class="trip-meta">
+              <span><i class="fa-regular fa-clock"></i> 5 Days / 4 Nights</span>
+              <span><i class="fa-solid fa-star" style="color: gold;"></i> 5.0</span>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="event.stopPropagation(); openBookingModal('Dahab - 5 Days Trip', 4500)">Book Experience</button>
+          </div>
+        </div>
+
+        <!-- Trip 3: Ras Sedr Camp -->
+        <div class="trip-card" data-dest="rassedr" data-cat="camp" onclick="openTripPage('rassedr')">
+          <div class="trip-image">
+            <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80" alt="Ras Sedr Camp Tents">
+            <span class="badge">Beach Camp & BBQ</span>
+            <span class="points-tag">+100 Pts</span>
+          </div>
+          <div class="trip-content">
+            <div class="trip-location"><i class="fa-solid fa-location-dot"></i> Ras Sedr, Egypt</div>
+            <h3 class="trip-title">Ras Sedr Camp</h3>
+            <div class="trip-price-row">
+              <span class="trip-price">1,800 EGP</span>
+            </div>
+            <p class="trip-desc">Beach vibes, campfire nights, music, sea activities, and relaxation memories.</p>
+            <div class="trip-meta">
+              <span><i class="fa-regular fa-clock"></i> Camp Experience</span>
+              <span><i class="fa-solid fa-star" style="color: gold;"></i> 4.9</span>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="event.stopPropagation(); openBookingModal('Ras Sedr Camp', 1800)">Book Experience</button>
+          </div>
+        </div>
+
+        <!-- Trip 4: Wadi Degla -->
+        <div class="trip-card" data-dest="wadidegla" data-cat="nature" onclick="openTripPage('wadidegla')">
+          <div class="trip-image">
+            <img src="https://static.majalla.com/styles/760x533/public/2023-07/156281.jpeg.webp?VersionId=tdPv5ZheBKYiIzqyDxbTVNLLixgo7V6t" alt="Wadi Degla Desert Canyon">
+            <span class="badge">1 Day Trip</span>
+            <span class="points-tag">+100 Pts</span>
+          </div>
+          <div class="trip-content">
+            <div class="trip-location"><i class="fa-solid fa-location-dot"></i> Cairo Protectorate</div>
+            <h3 class="trip-title">Wadi Degla - One Day Trip</h3>
+            <div class="trip-price-row">
+              <span class="trip-price">650 EGP</span>
+            </div>
+            <p class="trip-desc">Escape the city noise, canyon hiking, nature connection, and relaxing desert stargazing.</p>
+            <div class="trip-meta">
+              <span><i class="fa-regular fa-clock"></i> 1 Day</span>
+              <span><i class="fa-solid fa-star" style="color: gold;"></i> 4.8</span>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="event.stopPropagation(); openBookingModal('Wadi Degla - One Day Trip', 650)">Book Experience</button>
+          </div>
+        </div>
+
+        <!-- Trip 5: Nile Felucca -->
+        <div class="trip-card" data-dest="cairo" data-cat="event" onclick="openTripPage('flucca')">
+          <div class="trip-image">
+            <img src="https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=800&q=80" alt="Nile Felucca Cairo">
+            <span class="badge">Nile Cruise</span>
+            <span class="points-tag">+100 Pts</span>
+          </div>
+          <div class="trip-content">
+            <div class="trip-location"><i class="fa-solid fa-location-dot"></i> Cairo, Nile River</div>
+            <h3 class="trip-title">Sunset Nile Felucca Party</h3>
+            <div class="trip-price-row">
+              <span class="trip-price">450 EGP</span>
+            </div>
+            <p class="trip-desc">Experience a romantic or celebratory sunset ride along Cairo's historic Nile.</p>
+            <div class="trip-meta">
+              <span><i class="fa-regular fa-clock"></i> 3 Hours</span>
+              <span><i class="fa-solid fa-star" style="color: gold;"></i> 4.9</span>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="event.stopPropagation(); openBookingModal('Sunset Nile Felucca Party', 450)">Book Experience</button>
+          </div>
+        </div>
+
+        <!-- Trip 6: Alexandria Day Trip -->
+        <div class="trip-card" data-dest="alexandria" data-cat="city" onclick="openTripPage('alexandria')">
+          <div class="trip-image">
+            <img src="https://images.unsplash.com/photo-1553913861-c0fddf2619ee?auto=format&fit=crop&w=800&q=80" alt="Alexandria Citadel">
+            <span class="badge">City Tour</span>
+            <span class="points-tag">+100 Pts</span>
+          </div>
+          <div class="trip-content">
+            <div class="trip-location"><i class="fa-solid fa-location-dot"></i> Alexandria, Egypt</div>
+            <h3 class="trip-title">Alexandria Cultural Day Trip</h3>
+            <div class="trip-price-row">
+              <span class="trip-price">850 EGP</span>
+            </div>
+            <p class="trip-desc">Visit Qaitbay Citadel, Montaza Palace Gardens, BiblioAlex, and enjoy seafood by the sea.</p>
+            <div class="trip-meta">
+              <span><i class="fa-regular fa-clock"></i> Full Day</span>
+              <span><i class="fa-solid fa-star" style="color: gold;"></i> 4.7</span>
+            </div>
+            <button class="btn btn-primary btn-block" style="margin-top: 1rem;" onclick="event.stopPropagation(); openBookingModal('Alexandria Cultural Day Trip', 850)">Book Experience</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Interactive Destinations Map Section -->
+    <section id="map-section" class="section-padding map-section">
+      <div class="container">
+        <div class="section-title">
+          <span>Destinations Map</span>
+          <h2>Explore Our Locations</h2>
+        </div>
+
+        <div id="interactive-map"></div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section-padding features-section">
+      <div class="container">
+        <div class="section-title">
+          <span>Why Choose Us</span>
+          <h2>The Yalla Trip Club Experience</h2>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Safe & Insured Trips</h3>
+            <p>We prioritize your safety with certified tour guides, modern buses, and full trip insurance coverage.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-coins"></i></div>
+            <h3>Loyalty Cashback</h3>
+            <p>Get instant discounts on every trip you take. Earn 100 EGP back every single time you travel with us.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
+            <h3>24/7 VIP Support</h3>
+            <p>Our travel concierges are always online via WhatsApp to answer your questions and arrange private bookings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section-padding container">
+      <div class="section-title">
+        <span>Reviews</span>
+        <h2>What Our Travelers Say</h2>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p>"The Sokhna Yacht trip was unbelievable! Everything was organized down to the smallest detail. Using my points for a discount was super easy too!"</p>
+          <div class="testimonial-author">
+            <h4>Ahmed El-Sayed</h4>
+            <span>Cairo, Egypt</span>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p>"Dahab 5-day trip was the best vacation ever! Great group energy, amazing snorkeling spots, and seamless coordination. Yalla Trip Club is now my go-to agency."</p>
+          <div class="testimonial-author">
+            <h4>Nourhan M.</h4>
+            <span>Alexandria, Egypt</span>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </div>
+          <p>"Super professional team and wonderful beach camp vibes at Ras Sedr. Love how the loyalty points accumulate automatically!"</p>
+          <div class="testimonial-author">
+            <h4>Karim F.</h4>
+            <span>Giza, Egypt</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- End Page Home -->
+
+
+  <!-- ================= PAGE 2: INDIVIDUAL TRIP DETAILED WEBPAGE ================= -->
+  <div id="page-trip-detail" class="page-view">
+    
+    <!-- Dynamic Trip Hero Header -->
+    <div id="detHero" class="trip-detail-hero" style="background-image: url('');">
+      <div class="trip-detail-overlay"></div>
+      <div class="container">
+        <div class="back-btn-container">
+          <a class="back-btn" onclick="switchPage('home')"><i class="fa-solid fa-arrow-left"></i> Back to All Trips</a>
+        </div>
+        <span id="detBadge" class="badge" style="position: relative; display: inline-block; top: 0; left: 0; margin-bottom: 0.8rem;">Category</span>
+        <h1 id="detTitle" style="font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.2;">Trip Title</h1>
+        <div style="display: flex; gap: 2rem; color: #CBD5E1; font-size: 1rem; flex-wrap: wrap;">
+          <span id="detLocation"><i class="fa-solid fa-location-dot" style="color: var(--gold-accent);"></i> Location</span>
+          <span id="detDuration"><i class="fa-regular fa-clock" style="color: var(--gold-accent);"></i> Duration</span>
+          <span style="color: var(--gold-accent);"><i class="fa-solid fa-gem"></i> Earn +100 Loyalty Points</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content & Sidebar Grid -->
+    <div class="container">
+      <div class="trip-detail-content-grid">
+        
+        <!-- Left Column: Detailed Information & Photo Gallery -->
+        <div class="trip-main-info">
+          <h3>Overview & Experience</h3>
+          <p id="detDesc">Comprehensive description goes here...</p>
+
+          <h3 style="margin-top: 2.5rem;">Photo Gallery</h3>
+          <div class="photo-gallery-grid" id="detGallery">
+            <!-- Populated via JS -->
+          </div>
+
+          <h3 style="margin-top: 2.5rem;">Detailed Daily Itinerary</h3>
+          <ul id="detItinerary" style="list-style: none; margin-top: 1rem;">
+            <!-- Populated via JS -->
+          </ul>
+
+          <h3 style="margin-top: 2.5rem;">What's Included in the Package?</h3>
+          <ul style="list-style: none; margin-top: 1rem;" id="detIncluded">
+            <li><i class="fa-solid fa-check" style="color: var(--success-green); margin-right: 0.5rem;"></i> Luxury air-conditioned tourist bus transportation</li>
+            <li><i class="fa-solid fa-check" style="color: var(--success-green); margin-right: 0.5rem;"></i> Professional tour leader and local certified guides</li>
+            <li><i class="fa-solid fa-check" style="color: var(--success-green); margin-right: 0.5rem;"></i> Meals and refreshments as specified in the program</li>
+            <li><i class="fa-solid fa-check" style="color: var(--success-green); margin-right: 0.5rem;"></i> Full trip insurance coverage and permits</li>
+          </ul>
+        </div>
+
+        <!-- Right Column: Booking Sidebar -->
+        <div>
+          <div class="trip-sidebar-card">
+            <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); font-weight: 700;">Starting Price</span>
+            <div class="trip-sidebar-price" id="detPrice">0 EGP</div>
+            
+            <ul class="trip-sidebar-features">
+              <li><i class="fa-solid fa-shield-halved"></i> Fully Insured Trip</li>
+              <li><i class="fa-solid fa-coins"></i> Earns 100 Reward Points</li>
+              <li><i class="fa-solid fa-headset"></i> 24/7 WhatsApp Support</li>
+              <li><i class="fa-solid fa-bolt"></i> Instant Electronic Confirmation</li>
+            </ul>
+
+            <button class="btn btn-primary btn-block" id="detBookBtn" onclick="">Book This Trip Now</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- End Page Trip Detail -->
+
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Yalla Trip Club</h4>
+          <p>Your premier gateway to extraordinary Egyptian adventures, luxury yachts, beach camps, and rewarding loyalty perks.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <a onclick="switchPage('home'); scrollToSection('home')">Home</a>
+          <a onclick="switchPage('home'); scrollToSection('loyalty')">Loyalty Club</a>
+          <a onclick="switchPage('home'); scrollToSection('trips')">Trips Catalog</a>
+          <a onclick="switchPage('home'); scrollToSection('map-section')">Interactive Map</a>
+        </div>
+        <div class="footer-col">
+          <h4>Destinations</h4>
+          <a onclick="switchPage('home'); scrollToSection('trips')">Ain Sokhna</a>
+          <a onclick="switchPage('home'); scrollToSection('trips')">Dahab & Sinai</a>
+          <a onclick="switchPage('home'); scrollToSection('trips')">Ras Sedr</a>
+          <a onclick="switchPage('home'); scrollToSection('trips')">Cairo & Nile</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact Us</h4>
+          <p><i class="fa-solid fa-phone"></i> +20 100 123 4567</p>
+          <p><i class="fa-solid fa-envelope"></i> info@yallatripclub.com</p>
+          <p><i class="fa-solid fa-location-dot"></i> New Cairo, Egypt</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Yalla Trip Club. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating Social Media Buttons -->
+  <div class="floating-socials">
+    <a href="https://wa.me/201001234567" target="_blank" class="floating-btn whatsapp" title="Chat on WhatsApp">
+      <i class="fa-brands fa-whatsapp"></i>
+    </a>
+    <a href="https://instagram.com" target="_blank" class="floating-btn instagram" title="Follow on Instagram">
+      <i class="fa-brands fa-instagram"></i>
+    </a>
+  </div>
+
+  <!-- Booking Modal -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+      <div style="margin-bottom: 1.5rem;">
+        <span style="color: var(--gold-accent); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Secure Your Spot</span>
+        <h2 id="modalTripTitle" style="font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--dark-bg); margin-top: 0.2rem;">Book Trip</h2>
+      </div>
+
+      <form class="modal-form" onsubmit="submitBooking(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="bookName" required placeholder="Ahmed Mohamed">
+          </div>
+          <div class="form-group">
+            <label>Phone Number (WhatsApp)</label>
+            <input type="tel" id="bookPhone" required placeholder="+20 10xxxxxxxx">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Number of Travelers</label>
+            <input type="number" id="bookPersons" min="1" value="1" onchange="calculateTotal()" required>
+          </div>
+          <div class="form-group">
+            <label>Trip Date</label>
+            <input type="date" id="bookDate" required>
+          </div>
+        </div>
+
+        <!-- Payment Method Selection -->
+        <div class="form-group">
+          <label>Select Payment Method</label>
+          <div class="payment-methods-grid">
+            <label class="payment-option" onclick="selectPayment('cash')">
+              <input type="radio" name="paymentMethod" value="cash" required>
+              <i class="fa-solid fa-money-bill-wave"></i>
+              <span>Cash</span>
+            </label>
+            <label class="payment-option" onclick="selectPayment('telda')">
+              <input type="radio" name="paymentMethod" value="telda" required>
+              <i class="fa-solid fa-wallet"></i>
+              <span>Telda</span>
+            </label>
+            <label class="payment-option" onclick="selectPayment('instapay')">
+              <input type="radio" name="paymentMethod" value="instapay" required>
+              <i class="fa-solid fa-building-columns"></i>
+              <span>InstaPay</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Dynamic Payment Instructions Box -->
+        <div id="paymentInstructions" class="payment-instructions-box">
+          <!-- Populated via JS -->
+        </div>
+
+        <!-- Loyalty Discount Box -->
+        <div class="discount-apply-box">
+          <label>
+            <input type="checkbox" id="usePointsCheck" onchange="calculateTotal()"> 
+            Apply 100 Pts Loyalty Discount (-100 EGP)
+          </label>
+          <span style="font-weight: 700; color: var(--gold-accent);" id="modalPointsBadgeText">100 Pts Available</span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.5rem 0; padding: 1rem; background: var(--light-gray); border-radius: 10px;">
+          <span style="font-weight: 600; color: var(--text-dark);">Total Price:</span>
+          <span style="font-size: 1.4rem; font-weight: 700; color: var(--primary-blue);" id="modalTotalPrice">0 EGP</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Confirm Reservation</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // Local State Management
+    let userPoints = 100;
+    let currentBasePrice = 0;
+    let currentTripName = '';
+
+    // Comprehensive Trip Detailed Database for Separate Webpages
+    const tripDetailsDatabase = {
+      'sokhna': {
+        title: 'Sokhna Yacht Trip - 1 Day',
+        location: 'Ain Sokhna, Red Sea',
+        duration: '1 Day',
+        price: '2,200 EGP',
+        rawPrice: 2200,
+        badge: 'Luxury Yacht',
+        heroImage: 'https://i.pinimg.com/originals/37/e3/f3/37e3f39a308ea675fd8d5afa54c5b4ad.jpg',
+        gallery: [
+          'https://i.pinimg.com/originals/37/e3/f3/37e3f39a308ea675fd8d5afa54c5b4ad.jpg',
+          'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1569263979104-865ab9cd8d5c?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+        ],
+        desc: 'Escape the city to the pristine turquoise waters of Ain Sokhna. Board our private luxury yacht for an extraordinary day filled with sunshine, upbeat music, professional swimming & snorkeling gear, and freshly prepared seafood lunch served right on the upper deck.',
+        itinerary: [
+          '08:00 AM: Meeting point departure from Cairo in comfortable air-conditioned tourist vehicles.',
+          '10:00 AM: Arrival at Ain Sokhna Marina, welcome drinks, and luxury yacht boarding.',
+          '11:00 AM: Sailing to deep open sea spots for swimming, coral reef snorkeling, and relaxing under the sun.',
+          '02:00 PM: Delicious open-buffet seafood lunch served on deck with soft drinks.',
+          '04:00 PM: Sunset coastal sailing and music entertainment.',
+          '05:00 PM: Return to marina and comfortable return journey to Cairo.'
+        ]
+      },
+      'dahab': {
+        title: 'Dahab - 5 Days Trip',
+        location: 'Dahab, South Sinai',
+        duration: '5 Days / 4 Nights',
+        price: '4,500 EGP',
+        rawPrice: 4500,
+        badge: '5 Days Trip',
+        heroImage: 'https://img.freepik.com/premium-photo/milky-way-stars-sky-namib-desert-namibia-africa-some-scenic-clouds_107467-639.jpg',
+        gallery: [
+          'https://img.freepik.com/premium-photo/milky-way-stars-sky-namib-desert-namibia-africa-some-scenic-clouds_107467-639.jpg',
+          'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80'
+        ],
+        desc: 'Experience the magic and bohemian soul of Dahab with our comprehensive 5-day package. Dive into the world-famous Blue Hole, hike Mount Sinai for a breathtaking sunrise, shop in the vibrant seaside town center, and camp under millions of stars in the Sinai desert.',
+        itinerary: [
+          'Day 1: Morning departure from Cairo, hotel check-in at Dahab, and relaxing night tour at Lighthouse street.',
+          'Day 2: Full-day snorkeling excursion to Blue Hole & Abu Galum camel/safari adventure.',
+          'Day 3: White Canyon hiking and authentic Bedouin dinner night under the stars.',
+          'Day 4: Free day for scuba diving certification, kite surfing, or desert quad biking.',
+          'Day 5: Breakfast, souvenir shopping, group photo session, and return journey to Cairo.'
+        ]
+      },
+      'rassedr': {
+        title: 'Ras Sedr Camp',
+        location: 'Ras Sedr, Egypt',
+        duration: 'Camp Experience',
+        price: '1,800 EGP',
+        rawPrice: 1800,
+        badge: 'Beach Camp & BBQ',
+        heroImage: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1510312305653-8ed496efae75?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=800&q=80'
+        ],
+        desc: 'Unwind at our premium beachfront camp in Ras Sedr. Enjoy kitesurfing winds, beach volleyball tournaments, evening bonfires with marshmallow roasting, and acoustic guitar music sessions under the starry night sky.',
+        itinerary: [
+          'Day 1: Morning departure from Cairo, camp setup, beach games & water sports.',
+          'Evening 1: Sunset gathering followed by live BBQ dinner and campfire music.',
+          'Day 2: Morning yoga by the shore, swimming, camp wrap-up, and return.'
+        ]
+      },
+      'wadidegla': {
+        title: 'Wadi Degla - One Day Trip',
+        location: 'Cairo Protectorate',
+        duration: '1 Day',
+        price: '650 EGP',
+        rawPrice: 650,
+        badge: '1 Day Trip',
+        heroImage: 'https://static.majalla.com/styles/760x533/public/2023-07/156281.jpeg.webp?VersionId=tdPv5ZheBKYiIzqyDxbTVNLLixgo7V6t',
+        gallery: [
+          'https://static.majalla.com/styles/760x533/public/2023-07/156281.jpeg.webp?VersionId=tdPv5ZheBKYiIzqyDxbTVNLLixgo7V6t',
+          'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80'
+        ],
+        desc: 'Discover ancient canyon trails right inside Cairo. Wadi Degla Protectorate offers stunning geological limestone formations, hiking trails, and a peaceful desert nature retreat.',
+        itinerary: [
+          '08:30 AM: Gathering at Wadi Degla main gate and guide briefing.',
+          '09:00 AM: Guided canyon hike through prehistoric fossil beds and caves.',
+          '11:30 AM: Morning snack break and nature photography session.',
+          '01:00 PM: Wrap up, group celebration, and exit.'
+        ]
+      },
+      'flucca': {
+        title: 'Sunset Nile Felucca Party',
+        location: 'Cairo, Nile River',
+        duration: '3 Hours',
+        price: '450 EGP',
+        rawPrice: 450,
+        badge: 'Nile Cruise',
+        heroImage: 'https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1568322445389-f64ac2515020?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
+        ],
+        desc: 'Sail down the legendary Nile River on a traditional wooden felucca during golden hour. Enjoy refreshing beverages, upbeat music, and gorgeous panoramic views of Cairo skyline at sunset.',
+        itinerary: [
+          '05:00 PM: Boarding at Dokki / Zamalek Nile dock.',
+          '05:30 PM: Sunset sailing with background music and refreshments.',
+          '08:00 PM: Docking and conclusion of event.'
+        ]
+      },
+      'alexandria': {
+        title: 'Alexandria Cultural Day Trip',
+        location: 'Alexandria, Egypt',
+        duration: 'Full Day',
+        price: '850 EGP',
+        rawPrice: 850,
+        badge: 'City Tour',
+        heroImage: 'https://images.unsplash.com/photo-1553913861-c0fddf2619ee?auto=format&fit=crop&w=800&q=80',
+        gallery: [
+          'https://images.unsplash.com/photo-1553913861-c0fddf2619ee?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+          'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80'
+        ],
+        desc: 'Explore the pearl of the Mediterranean. Visit the majestic Qaitbay Citadel, stroll through Montaza royal gardens, tour the grand Bibliotheca Alexandrina, and savor authentic Alexandrian seafood.',
+        itinerary: [
+          '07:30 AM: Departure from Cairo via comfortable coach.',
+          '10:00 AM: Visit to Qaitbay Citadel & seaside corniche walk.',
+          '12:30 PM: Seafood lunch at a historic local restaurant.',
+          '03:00 PM: Tour of Bibliotheca Alexandrina.',
+          '05:30 PM: Return trip to Cairo.'
+        ]
+      }
+    };
+
+    // Switch between Home Page and Dedicated Trip Webpage
+    function switchPage(pageId) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active-page'));
+      
+      if (pageId === 'home') {
+        document.getElementById('page-home').classList.add('active-page');
+      } else if (pageId === 'trip-detail') {
+        document.getElementById('page-trip-detail').classList.add('active-page');
+      }
+    }
+
+    // Open Separate Detailed Webpage for a Trip
+    function openTripPage(tripKey) {
+      const trip = tripDetailsDatabase[tripKey];
+      if (!trip) return;
+
+      // Populate Hero Section
+      document.getElementById('detHero').style.backgroundImage = `url('${trip.heroImage}')`;
+      document.getElementById('detBadge').innerText = trip.badge;
+      document.getElementById('detTitle').innerText = trip.title;
+      document.getElementById('detLocation').innerHTML = `<i class="fa-solid fa-location-dot" style="color: var(--gold-accent);"></i> ${trip.location}`;
+      document.getElementById('detDuration').innerHTML = `<i class="fa-regular fa-clock" style="color: var(--gold-accent);"></i> ${trip.duration}`;
+      document.getElementById('detDesc').innerText = trip.desc;
+      document.getElementById('detPrice').innerText = trip.price;
+
+      // Populate Photo Gallery
+      const galleryContainer = document.getElementById('detGallery');
+      galleryContainer.innerHTML = '';
+      trip.gallery.forEach(imgUrl => {
+        const img = document.createElement('img');
+        img.src = imgUrl;
+        img.alt = 'Trip Gallery Photo';
+        galleryContainer.appendChild(img);
+      });
+
+      // Populate Itinerary
+      const itineraryList = document.getElementById('detItinerary');
+      itineraryList.innerHTML = '';
+      trip.itinerary.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.style.cssText = 'position: relative; padding-left: 2rem; margin-bottom: 1rem; font-size: 0.95rem; color: var(--text-dark);';
+        li.innerHTML = `<i class="fa-solid fa-circle-check" style="position: absolute; left: 0; color: var(--gold-accent); top: 3px;"></i> ${item}`;
+        itineraryList.appendChild(li);
+      });
+
+      // Update Booking Button on Sidebar
+      document.getElementById('detBookBtn').setAttribute('onclick', `openBookingModal('${trip.title}', ${trip.rawPrice})`);
+
+      // Switch view to trip detail page
+      switchPage('trip-detail');
+    }
+
+    // Scroll helper
+    function scrollToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Filter Trips Function (Search Widget)
+    function filterTrips() {
+      const selectedDest = document.getElementById('search-dest').value;
+      const selectedCat = document.getElementById('search-cat').value;
+      const cards = document.querySelectorAll('.trip-card');
+
+      cards.forEach(card => {
+        const dest = card.getAttribute('data-dest');
+        const cat = card.getAttribute('data-cat');
+
+        const matchDest = (selectedDest === 'all' || dest === selectedDest);
+        const matchCat = (selectedCat === 'all' || cat === selectedCat);
+
+        if (matchDest && matchCat) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      document.getElementById('trips').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Payment Selection Handler
+    function selectPayment(method) {
+      document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+      event.currentTarget.classList.add('selected');
+      const radio = event.currentTarget.querySelector('input[type="radio"]');
+      radio.checked = true;
+
+      const infoBox = document.getElementById('paymentInstructions');
+      infoBox.classList.add('active');
+
+      if (method === 'cash') {
+        infoBox.innerHTML = `<strong><i class="fa-solid fa-money-bill-wave"></i> Cash Payment:</strong> You can pay cash upon meeting our representative or at our main office in New Cairo before the trip departure.`;
+      } else if (method === 'telda') {
+        infoBox.innerHTML = `<strong><i class="fa-solid fa-wallet"></i> Telda Transfer:</strong> Send the exact total amount to our Telda username: <code>@yallatripclub</code> and upload/send your transfer screenshot via WhatsApp.`;
+      } else if (method === 'instapay') {
+        infoBox.innerHTML = `<strong><i class="fa-solid fa-building-columns"></i> InstaPay Transfer:</strong> Transfer funds instantly via InstaPay to our address: <code>yallatrip@instapay</code> or mobile <code>01001234567</code>.`;
+      }
+    }
+
+    // Modal Control Functions
+    function openBookingModal(tripName, basePrice) {
+      currentTripName = tripName;
+      currentBasePrice = basePrice;
+
+      document.getElementById('modalTripTitle').innerText = `Book: ${tripName}`;
+      
+      const ptsBadge = document.getElementById('modalPointsBadgeText');
+      if (userPoints >= 100) {
+        ptsBadge.innerText = `${userPoints} Pts Available`;
+        document.getElementById('usePointsCheck').disabled = false;
+      } else {
+        ptsBadge.innerText = `0 Pts Available`;
+        document.getElementById('usePointsCheck').disabled = true;
+        document.getElementById('usePointsCheck').checked = false;
+      }
+
+      // Reset payment selection
+      document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
+      document.querySelectorAll('input[name="paymentMethod"]').forEach(r => r.checked = false);
+      document.getElementById('paymentInstructions').classList.remove('active');
+
+      calculateTotal();
+      document.getElementById('bookingModal').classList.add('active');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('bookingModal').classList.remove('active');
+    }
+
+    function calculateTotal() {
+      const persons = parseInt(document.getElementById('bookPersons').value) || 1;
+      const usePoints = document.getElementById('usePointsCheck').checked;
+
+      let total = currentBasePrice * persons;
+      if (usePoints && userPoints >= 100) {
+        total -= 100;
+        if (total < 0) total = 0;
+      }
+
+      document.getElementById('modalTotalPrice').innerText = `${total.toLocaleString()} EGP`;
+    }
+
+    function submitBooking(event) {
+      event.preventDefault();
+      const name = document.getElementById('bookName').value;
+      const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+
+      if (!selectedPayment) {
+        alert('Please select a payment method (Cash, Telda, or InstaPay).');
+        return;
+      }
+
+      const usePoints = document.getElementById('usePointsCheck').checked;
+
+      if (usePoints && userPoints >= 100) {
+        userPoints -= 100;
+      }
+
+      userPoints += 100;
+
+      document.getElementById('user-points-display').innerText = `${userPoints} Pts`;
+
+      alert(`Thank you, ${name}! Your booking for "${currentTripName}" has been received successfully.\n\nPayment Method Selected: ${selectedPayment.value.toUpperCase()}\n🎉 You earned +100 Loyalty Points! Your new balance is ${userPoints} Pts.`);
+      
+      closeBookingModal();
+      event.target.reset();
+    }
+
+    // Close modals on clicking backdrop overlay
+    window.onclick = function(event) {
+      const bookingModal = document.getElementById('bookingModal');
+      if (event.target === bookingModal) closeBookingModal();
+    }
+
+    // Initialize Leaflet Interactive Map centered on Egypt
+    document.addEventListener("DOMContentLoaded", function() {
+      const map = L.map('interactive-map').setView([28.5, 31.0], 6);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      const locations = [
+        { name: "Cairo & Nile Cruises", coords: [30.0444, 31.2357], desc: "Nile Felucca & City Excursions" },
+        { name: "Ain Sokhna", coords: [29.6294, 32.3101], desc: "VIP Luxury Yacht Sailing" },
+        { name: "Ras Sedr", coords: [29.5878, 32.6975], desc: "Beach Camping & BBQ" },
+        { name: "Dahab", coords: [28.5092, 34.5136], desc: "5-Day Paradise & Blue Hole" },
+        { name: "Alexandria", coords: [31.2001, 29.9187], desc: "Cultural Day Trip" },
+        { name: "Wadi Degla", coords: [29.9632, 31.3323], desc: "Desert Canyon & Hiking" }
+      ];
+
+      locations.forEach(loc => {
+        L.marker(loc.coords).addTo(map)
+          .bindPopup(`<b>${loc.name}</b><br>${loc.desc}`);
+      });
+    });
+  </script>
+</body>
+</html>
